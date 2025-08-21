@@ -31,7 +31,7 @@ class KachiCdkDemoStack(Stack):
         cluster = eks.Cluster(
             self, "EksCluster",
             cluster_name=config["cluster_name"],
-            version=eks.KubernetesVersion.V1_29,
+            version=eks.KubernetesVersion.V1_19,
             vpc=vpc,
             default_capacity=0,
             masters_role=cluster_admin
