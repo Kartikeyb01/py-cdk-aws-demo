@@ -47,8 +47,8 @@ jobs:
         run: |
           if [ "${{ github.event.inputs.action }}" == "deploy" ]; then
             echo " Deploying stack..."
-            cdk deploy KachiCdkDemoStack --require-approval never
+            cdk deploy KachiCdkDemoStackDev --require-approval never
           else
             echo " Destroying stack..."
-            cdk destroy KachiCdkDemoStack --force
+            cdk destroy KachiCdkDemoStackDev --force
           fi  
