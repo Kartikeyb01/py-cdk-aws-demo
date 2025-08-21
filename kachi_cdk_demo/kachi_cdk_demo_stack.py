@@ -12,31 +12,35 @@ class KachiCdkDemoStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, config: dict, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        # 1️⃣ Create VPC
+        # Create VPC
         vpc = ec2.Vpc(
             self, "EksVpc",
             vpc_name=config["vpc_name"],
             max_azs=2
         )
 
-        # 2️⃣ IAM Role
+        #  IAM Role
         cluster_admin = iam.Role(
             self, "ClusterAdminRole",
             role_name=f"{config['cluster_name']}-admin-role",
             assumed_by=iam.AccountRootPrincipal()
         )
 
-        # 3️⃣ EKS Cluster
+        # Create kubectl layer
+        kubectl_layer = eks.KubectlLayer(self, "KubectlLayer")
+
+        # EKS Cluster
         cluster = eks.Cluster(
             self, "EksCluster",
             cluster_name=config["cluster_name"],
             version=eks.KubernetesVersion.V1_29,
             vpc=vpc,
             default_capacity=0,
-            masters_role=cluster_admin
+            masters_role=cluster_admin,
+            kubectl_layer=kubectl_layer
         )
 
-        # 4️⃣ Managed Node Group
+        # Managed Node Group
         cluster.add_nodegroup_capacity(
             "NodeGroup",
             nodegroup_name=config["nodegroup_name"],
