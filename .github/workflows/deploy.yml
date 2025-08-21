@@ -1,8 +1,16 @@
 name: Deploy CDK
 
 on:
-  workflow_dispatch:   # manual trigger
-
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Choose whether to deploy or destroy the stack"
+        required: true
+        default: "deploy"
+        type: choice
+        options:
+          - deploy
+          - destroy
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -28,12 +36,18 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Bootstrap CDK (only needed once per account/region)
+      - name: Bootstrap CDK
         run: |
           cdk bootstrap aws://$AWS_ACCOUNT_ID/us-east-1
         env:
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
 
-      - name: Deploy stack
+      - name: Deploy or Destroy Stack
         run: |
-          cdk deploy KachiCdkDemoStack --require-approval never
+          if [ "${{ github.event.inputs.action }}" == "deploy" ]; then
+            echo " Deploying stack..."
+            cdk deploy KachiCdkDemoStack --require-approval never
+          else
+            echo " Destroying stack..."
+            cdk destroy KachiCdkDemoStack --force
+          fi  
