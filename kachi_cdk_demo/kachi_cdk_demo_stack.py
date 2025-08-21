@@ -26,9 +26,6 @@ class KachiCdkDemoStack(Stack):
             assumed_by=iam.AccountRootPrincipal()
         )
 
-        # Create kubectl layer
-        kubectl_layer = eks.KubectlLayer(self, "KubectlLayer")
-
         # EKS Cluster
         cluster = eks.Cluster(
             self, "EksCluster",
@@ -36,8 +33,7 @@ class KachiCdkDemoStack(Stack):
             version=eks.KubernetesVersion.V1_29,
             vpc=vpc,
             default_capacity=0,
-            masters_role=cluster_admin,
-            kubectl_layer=kubectl_layer
+            masters_role=cluster_admin
         )
 
         # Managed Node Group
