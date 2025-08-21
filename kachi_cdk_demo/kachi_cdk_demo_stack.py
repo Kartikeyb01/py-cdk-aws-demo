@@ -9,39 +9,39 @@ from constructs import Construct
 
 class KachiCdkDemoStack(Stack):
 
-    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+    def __init__(self, scope: Construct, construct_id: str, config: dict, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        # 1️⃣ Create a VPC
+        # 1️⃣ Create VPC
         vpc = ec2.Vpc(
-            self, "DemoEksVpc",
-            vpc_name="Vpc-demo",
-            max_azs=2  # Use 2 Availability Zones for HA
+            self, "EksVpc",
+            vpc_name=config["vpc_name"],
+            max_azs=2
         )
 
-        # 2️⃣ IAM Role for Cluster Admin
+        # 2️⃣ IAM Role
         cluster_admin = iam.Role(
-            self, "DemoClusterAdminRole",
-            role_name="cluster-roles",
+            self, "ClusterAdminRole",
+            role_name=f"{config['cluster_name']}-admin-role",
             assumed_by=iam.AccountRootPrincipal()
         )
 
-        # 3️⃣ Create EKS Cluster
+        # 3️⃣ EKS Cluster
         cluster = eks.Cluster(
-            self, "DemoEksCluster",
-            cluster_name="demo-cluster",
+            self, "EksCluster",
+            cluster_name=config["cluster_name"],
             version=eks.KubernetesVersion.V1_29,
             vpc=vpc,
-            default_capacity=0,  # We'll use managed nodegroup instead
+            default_capacity=0,
             masters_role=cluster_admin
         )
 
-        # 4️⃣ Add Managed Node Group
+        # 4️⃣ Managed Node Group
         cluster.add_nodegroup_capacity(
-            "DemoNodeGroup",
-            nodegroup_name="demo-cluster-node-group",
-            desired_size=1,
-            min_size=1,
-            max_size=3,
-            instance_types=[ec2.InstanceType("t3.small")]
+            "NodeGroup",
+            nodegroup_name=config["nodegroup_name"],
+            desired_size=config["desired_size"],
+            min_size=config["min_size"],
+            max_size=config["max_size"],
+            instance_types=[ec2.InstanceType(config["instance_type"])]
         )
