@@ -5,6 +5,7 @@ from aws_cdk import (
     aws_iam as iam,
 )
 from constructs import Construct
+from aws_cdk.lambda_layer_kubectl_v29 import KubectlV29Layer
 
 class KachiCdkDemoStack(Stack):
 
@@ -32,7 +33,8 @@ class KachiCdkDemoStack(Stack):
             vpc=vpc,
             default_capacity=0,
             masters_role=cluster_admin,
-            version=eks.KubernetesVersion.V1_29
+            version=eks.KubernetesVersion.V1_29,
+            kubectl_layer=KubectlV29Layer(self, "KubectlLayer")
         )
 
         # Managed Node Group

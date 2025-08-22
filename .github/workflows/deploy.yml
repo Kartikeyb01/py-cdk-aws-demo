@@ -32,7 +32,7 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip show aws-cdk-lib
-          pip install aws-cdk.lambda-layer-kubectl-v33
+          pip install aws-cdk.lambda-layer-kubectl-v29
           npm install -g aws-cdk
 
       - name: Configure AWS credentials
