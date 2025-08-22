@@ -1,12 +1,11 @@
 from aws_cdk import (
-    Duration,
     Stack, # is a base class that represents a CloudFormation stack. By inheriting from it, your class automatically becomes a CDK stack and can define AWS resources
     aws_ec2 as ec2,
     aws_eks as eks,
     aws_iam as iam,
 )
 from constructs import Construct
-
+from aws_cdk.lambda_layer_kubectl_v33 import KubectlV33Layer
 
 class KachiCdkDemoStack(Stack):
 
@@ -31,10 +30,11 @@ class KachiCdkDemoStack(Stack):
         cluster = eks.Cluster(
             self, "EksCluster",
             cluster_name=config["cluster_name"],
-            version=eks.KubernetesVersion.V1_19,
             vpc=vpc,
             default_capacity=0,
-            masters_role=cluster_admin
+            masters_role=cluster_admin,
+            version=eks.KubernetesVersion.V1_33,
+            kubectl_layer=KubectlV33Layer(self, "kubectl")
         )
 
         # Managed Node Group
