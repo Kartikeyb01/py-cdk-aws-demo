@@ -32,7 +32,7 @@ class KachiCdkDemoStack(Stack):
             vpc=vpc,
             default_capacity=0,
             masters_role=cluster_admin,
-            version=eks.KubernetesVersion.V1_25,
+            version=eks.KubernetesVersion.V1_33
         )
 
         # Managed Node Group
